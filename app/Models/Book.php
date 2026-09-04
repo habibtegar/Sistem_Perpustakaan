@@ -18,6 +18,7 @@ class Book extends Model
         'category',
         'category_id',
         'stock',
+        'cover',
         'description',
     ];
 
@@ -53,5 +54,17 @@ class Book extends Model
         }
 
         return $this->category ?: 'Umum';
+    }
+
+    public function getCoverUrlAttribute(): string
+    {
+        if ($this->cover && file_exists(public_path('storage/' . $this->cover))) {
+            return asset('storage/' . $this->cover);
+        }
+        if ($this->cover && file_exists(public_path($this->cover))) {
+            return asset($this->cover);
+        }
+
+        return asset('images/default-book.svg');
     }
 }

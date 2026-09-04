@@ -21,6 +21,7 @@ class Transaction extends Model
         'status',
         'fine_amount',
         'notes',
+        'admin_notes',
     ];
 
     protected $casts = [
@@ -45,6 +46,10 @@ class Transaction extends Model
      */
     public function getDaysLateAttribute(): int
     {
+        if (in_array($this->status, ['Menunggu', 'Ditolak'])) {
+            return 0;
+        }
+
         $dueDate = Carbon::parse($this->due_date)->startOfDay();
         $targetDate = $this->return_date 
             ? Carbon::parse($this->return_date)->startOfDay() 
@@ -66,12 +71,18 @@ class Transaction extends Model
             return (int) $this->fine_amount;
         }
 
-        $rate = (int) config('library.fine_per_day', 1000);
+        if (in_array($this->status, ['Menunggu', 'Ditolak'])) {
+            return 0;
+        }
+
+        $rate = (int) Setting::get('fine_per_day', config('library.fine_per_day', 1000));
         return $this->days_late * $rate;
     }
 
     /**
      * Menentukan status dinamis transaksi:
+     * - Menunggu
+     * - Ditolak
      * - Dikembalikan
      * - Terlambat (jika belum dikembalikan dan hari ini > due_date)
      * - Akan Jatuh Tempo (jika belum dikembalikan dan jatuh tempo dalam <= 2 hari)
@@ -79,6 +90,14 @@ class Transaction extends Model
      */
     public function getCalculatedStatusAttribute(): string
     {
+        if ($this->status === 'Menunggu') {
+            return 'Menunggu';
+        }
+
+        if ($this->status === 'Ditolak') {
+            return 'Ditolak';
+        }
+
         if ($this->status === 'Dikembalikan' || $this->return_date) {
             return 'Dikembalikan';
         }

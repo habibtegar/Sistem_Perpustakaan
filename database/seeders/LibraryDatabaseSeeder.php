@@ -5,12 +5,44 @@ namespace Database\Seeders;
 use App\Models\Book;
 use App\Models\Category;
 use App\Models\Member;
+use App\Models\Setting;
+use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class LibraryDatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        // 1. Buat Akun Administrator Bawaan
+        User::firstOrCreate(
+            ['username' => 'admin'],
+            [
+                'name' => 'Administrator Perpustakaan',
+                'email' => 'admin@perpustakaan.com',
+                'password' => Hash::make('admin123'),
+                'role' => 'admin',
+            ]
+        );
+
+        // 2. Buat Akun Peminjam Bawaan
+        $peminjamUser = User::firstOrCreate(
+            ['username' => 'peminjam'],
+            [
+                'name' => 'Ahmad Fauzi',
+                'email' => 'peminjam@perpustakaan.com',
+                'password' => Hash::make('peminjam123'),
+                'role' => 'peminjam',
+            ]
+        );
+
+        // 3. Konfigurasi Pengaturan Bawaan
+        Setting::set('fine_per_day', 1000, 'Tarif denda keterlambatan per hari (Rp)');
+        Setting::set('default_loan_days', 7, 'Durasi standar peminjaman (Hari)');
+        Setting::set('library_name', 'Sistem Manajemen Perpustakaan Digital', 'Nama Perpustakaan');
+        Setting::set('library_address', 'Jl. Pendidikan No. 123, Kampus Merdeka', 'Alamat Perpustakaan');
+
+        // 4. Kategori Bawaan
         $defaultCategories = [
             ['name' => 'Pelajaran', 'description' => 'Buku teks dan referensi kurikulum sekolah.'],
             ['name' => 'Cerita Rakyat', 'description' => 'Kisah rakyat, dongeng nusantara, dan legenda tradisional.'],
@@ -24,7 +56,7 @@ class LibraryDatabaseSeeder extends Seeder
             Category::firstOrCreate(['name' => $catData['name']], $catData);
         }
 
-        // Hubungkan buku lama ke tabel categories jika category_id belum terisi
+        // 5. Hubungkan buku lama ke tabel categories & beri stok awal
         $categoriesMap = Category::pluck('id', 'name')->toArray();
         foreach (Book::all() as $book) {
             $updated = false;
@@ -41,19 +73,24 @@ class LibraryDatabaseSeeder extends Seeder
             }
         }
 
-        // Tambah contoh anggota jika belum ada
-        if (Member::count() === 0) {
-            $members = [
+        // 6. Hubungkan/Buat Data Anggota
+        Member::firstOrCreate(
+            ['member_code' => 'MBR-0001'],
+            [
+                'user_id' => $peminjamUser->id,
+                'name' => 'Ahmad Fauzi',
+                'class' => 'XII IPA 1',
+                'email' => 'peminjam@perpustakaan.com',
+                'phone' => '081234567890',
+                'status' => 'Aktif',
+            ]
+        );
+
+        // Tambahkan anggota lainnya jika belum ada
+        if (Member::count() <= 1) {
+            $additionalMembers = [
                 [
-                    'member_code' => 'MBR-001',
-                    'name' => 'Ahmad Fauzi',
-                    'class' => 'XII IPA 1',
-                    'email' => 'ahmad.fauzi@example.com',
-                    'phone' => '081234567890',
-                    'status' => 'Aktif',
-                ],
-                [
-                    'member_code' => 'MBR-002',
+                    'member_code' => 'MBR-0002',
                     'name' => 'Siti Nurhaliza',
                     'class' => 'XI IPS 2',
                     'email' => 'siti.nur@example.com',
@@ -61,24 +98,16 @@ class LibraryDatabaseSeeder extends Seeder
                     'status' => 'Aktif',
                 ],
                 [
-                    'member_code' => 'MBR-003',
+                    'member_code' => 'MBR-0003',
                     'name' => 'Budi Pratama',
                     'class' => 'X MIPA 3',
                     'email' => 'budi.pratama@example.com',
                     'phone' => '083456789012',
                     'status' => 'Aktif',
                 ],
-                [
-                    'member_code' => 'MBR-004',
-                    'name' => 'Rina Wijaya',
-                    'class' => 'XII IPS 1',
-                    'email' => 'rina.wijaya@example.com',
-                    'phone' => '085678901234',
-                    'status' => 'Aktif',
-                ],
             ];
 
-            foreach ($members as $m) {
+            foreach ($additionalMembers as $m) {
                 Member::create($m);
             }
         }
