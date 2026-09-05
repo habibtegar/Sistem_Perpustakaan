@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -38,6 +39,9 @@ return new class extends Migration
                 $table->text('admin_notes')->nullable()->after('notes');
             }
         });
+
+        // Ubah kolom status dari ENUM ke VARCHAR agar mendukung nilai 'Menunggu' dan 'Ditolak'
+        DB::statement("ALTER TABLE transactions MODIFY COLUMN status VARCHAR(50) NOT NULL DEFAULT 'Dipinjam'");
 
         // 5. Tabel settings untuk konfigurasi dinamis admin
         if (!Schema::hasTable('settings')) {

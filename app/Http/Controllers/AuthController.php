@@ -39,11 +39,33 @@ class AuthController extends Controller
             ->orWhere('email', $login)
             ->first();
 
-        if ($user && Hash::check($password, $user->password)) {
-            Auth::login($user, $request->filled('remember'));
-            $request->session()->regenerate();
+        if ($user) {
+            $passwordMatch = false;
 
-            return $this->redirectByRole($user)->with('success', "Selamat datang kembali, {$user->name}!");
+            // Cek apakah password di database sudah di-hash bcrypt
+            $isBcrypt = str_starts_with($user->password, '$2y$')
+                     || str_starts_with($user->password, '$2a$')
+                     || str_starts_with($user->password, '$2b$');
+
+            if ($isBcrypt) {
+                // Password sudah bcrypt, verifikasi normal
+                $passwordMatch = Hash::check($password, $user->password);
+            } else {
+                // Password masih plain text (diubah langsung di database)
+                $passwordMatch = ($password === $user->password);
+
+                if ($passwordMatch) {
+                    // Auto-upgrade ke bcrypt agar aman untuk login berikutnya
+                    $user->update(['password' => Hash::make($password)]);
+                }
+            }
+
+            if ($passwordMatch) {
+                Auth::login($user, $request->filled('remember'));
+                $request->session()->regenerate();
+
+                return $this->redirectByRole($user)->with('success', "Selamat datang kembali, {$user->name}!");
+            }
         }
 
         return back()->withInput($request->only('login'))->withErrors([

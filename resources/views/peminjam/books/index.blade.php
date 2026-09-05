@@ -67,7 +67,7 @@
             </div>
         </div>
     @else
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; margin-bottom: 32px;">
+        <div class="catalog-grid">
             @foreach ($books as $book)
                 <div style="background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03); transition: transform 0.2s ease, box-shadow 0.2s ease;">
                     <div>
