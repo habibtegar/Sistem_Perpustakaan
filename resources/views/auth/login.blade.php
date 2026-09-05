@@ -145,17 +145,6 @@
                 </button>
             </form>
 
-            <div class="auth-demo-box">
-                <div style="font-weight: 700; margin-bottom: 6px; color: #1e293b;">⚡ Akun Demo Bawaan:</div>
-                <div class="auth-demo-row">
-                    <span>🛡️ <strong>Admin:</strong> admin / admin123</span>
-                    <span class="auth-demo-badge" onclick="fillCredentials('admin', 'admin123')">Gunakan</span>
-                </div>
-                <div class="auth-demo-row">
-                    <span>📖 <strong>Peminjam:</strong> peminjam / peminjam123</span>
-                    <span class="auth-demo-badge" onclick="fillCredentials('peminjam', 'peminjam123')">Gunakan</span>
-                </div>
-            </div>
 
             <div style="text-align: center; margin-top: 20px; font-size: 0.9rem; color: #64748b;">
                 Belum punya akun peminjam?
