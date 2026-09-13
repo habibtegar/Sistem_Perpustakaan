@@ -88,7 +88,7 @@
             <div class="auth-header">
                 <span class="auth-icon">📖</span>
                 <h1 class="auth-title">Masuk ke Perpustakaan</h1>
-                <p class="auth-subtitle">Gunakan akun Admin atau</p>
+                <p class="auth-subtitle">Gunakan akun Admin atau User</p>
             </div>
 
             @if (session('success'))
