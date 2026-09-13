@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
+  <!-- Circle Base -->
+  <circle cx="250" cy="250" r="236" fill="#000000"/>
+  
+  <!-- Outer Book Spine / Cover -->
+  <path d="M 110 162
+           L 110 324
+           C 110 362, 175 405, 250 432
+           C 325 405, 390 362, 390 324
+           L 390 162" 
+        fill="none" 
+        stroke="#ffffff" 
+        stroke-width="19" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"/>
+
+  <!-- Left Page -->
+  <path d="M 132 170
+           C 172 152, 220 166, 238 200
+           L 238 350
+           C 218 316, 172 306, 132 328
+           Z" 
+        fill="#ffffff"/>
+
+  <!-- Right Page -->
+  <path d="M 368 170
+           C 328 152, 280 166, 262 200
+           L 262 350
+           C 282 316, 328 306, 368 328
+           Z" 
+        fill="#ffffff"/>
+</svg>
